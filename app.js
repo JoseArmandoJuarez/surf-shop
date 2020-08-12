@@ -3,11 +3,27 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const passport = require('passport');
+const session = require('express-session');
+const mongoose = require('mongoose');
+
+// Connect to the database
+mongoose.connect('mongodb://172.17.237.249:27017/surf-shop', {useNewUrlParser: true, useUnifiedTopology: true });
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function(){
+  console.log('Connected!');
+});
+
+// models
+const User = require('./models/user');
 
 // routes
 const indexRouter = require('./routes/index');
 const postsRouter = require('./routes/posts');
 const reviewsRouter = require('./routes/reviews');
+const { connect } = require('http2');
 
 const app = express();
 
@@ -21,7 +37,22 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// routes
+
+// Configure Passport and Sessions
+app.use(session({
+  secret: 'hang ten dude!',
+  resave: false,
+  saveUninitialized: true
+}));
+
+
+// Configure Passport and Sessions
+passport.use(User.createStrategy());
+// serializeUser() & deserializeUser() comes form local-passport-moongose
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// Mount routes
 app.use('/', indexRouter);
 app.use('/posts', postsRouter);
 app.use('/posts/:id/reviews', reviewsRouter);

@@ -1,7 +1,8 @@
 const User = require('../models/user');
+const passport = require('passport');
 
 module.exports = {
-    postRegister(req, res, next) {
+    async postRegister(req, res, next) {
         //Creating a new User and getting the values from the form
         const newUser = new User({
             username: req.body.username,
@@ -11,13 +12,21 @@ module.exports = {
 
         // passing newUser 
         // passing in a password as the second argument to register to be hashed
-        User.register(newUser, req.body.password, (err) => {
-            if(err){
-                console.log('error while user register!', err);
-                return next(err);
-            }
-            console.log('user registered!');
-            res.redirect('/');
-        });
+        await User.register(newUser, req.body.password);
+        res.redirect('/');
+    },
+
+    postLogin(req, res, next) {
+        // runs a local strategy
+        passport.authenticate('local', 
+        {
+          successRedirect: '/',
+          failureRedirect: '/login'
+        })(req, res, next);
+    },
+
+    getLogout(req, res, next) {
+        req.logout();
+        res.redirect('/');
     }
 }

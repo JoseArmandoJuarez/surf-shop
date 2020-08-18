@@ -1,6 +1,8 @@
 <h1>New Post!</h1>
 
-<form action="/posts" method="POST">
+<!--  when your form includes any <input type="file"> elements use enctype="multipart/form-data" -->
+<!--  enctype="multipart/form-data" is an encoding type that allows files to be sent through a POST -->
+<form action="/posts" method="POST" enctype="multipart/form-data">
     <div class="form-group">
         <label>Title</label>
         <input type="text" name="post[title]" placeholder="Title">
@@ -8,6 +10,10 @@
     <div class="form-group">
         <label>Price</label>
         <input type="text" name="post[price]" placeholder="Price">
+    </div>
+    <div class="form-group">
+        <label>upload Image:</label>
+        <input type="file" accept="images/*" name="images" multiple>
     </div>
     <div class="form-group">
         <label>Description</label>

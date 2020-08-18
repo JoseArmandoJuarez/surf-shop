@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer({'dest': 'uploads/'})
 const { asyncErrorHandler } = require('../middleware/index');
 const { 
     postIndex,
@@ -17,8 +19,9 @@ router.get('/', asyncErrorHandler(postIndex));
 // GET posts new /posts/new
 router.get('/new', postNew);
 
-// POST posts create /posts
-router.post('/', asyncErrorHandler(postCreate));
+// POST posts create /posts   'images'- name of the input thats coming from the form
+                            // 4 - number of images user is allowed to upload
+router.post('/', upload.array('images', 4), asyncErrorHandler(postCreate));
 
 // GET posts show /posts/:id
 router.get('/:id', asyncErrorHandler(postShow));

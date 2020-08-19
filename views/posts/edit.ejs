@@ -1,6 +1,6 @@
 <h1>Edit Post!</h1>
 
-<form action="/posts/<%= post.id %>?_method=PUT" method="POST">
+<form action="/posts/<%= post.id %>?_method=PUT" method="POST" id="postEditForm" enctype="multipart/form-data">
     <div class="form-group">
         <label>Title</label>
         <input type="text" name="post[title]" placeholder="Title" value="<%= post.title %>">
@@ -8,6 +8,17 @@
     <div class="form-group">
         <label>Price</label>
         <input type="text" name="post[price]" placeholder="Price" value="<%= post.price %>">
+    </div>
+    <div class="form-group">
+        <label>Upload Images:</label>
+        <input type="file" id="imageUpload" accept="images/*" name="images" multiple>
+        <div>
+            <% post.images.forEach(function(image, i) {  %>
+                <img src="<%= image.url %>" alt="surf boards" width="200px">
+                <label for="image<%= i %>">Delete?</label>
+                <input type="checkbox" name="deleteImages[]" class="imageDeleteCheckbox" id="image<%= i %>" value="<%= image.public_id %>">
+            <% }); %>
+        </div>
     </div>
     <div class="form-group">
         <label>Description</label>
@@ -19,3 +30,26 @@
     </div>
     <input type="submit">
 </form>
+
+
+
+<script>
+    // find post edit form
+    let postEditForm = document.getElementById('postEditForm');
+    // add submit listener to post edit form
+    postEditForm.addEventListener('submit', function(event) {
+        // find length of upload images
+        let imageUploads = document.getElementById('imageUpload').files.length;
+        // find total number of existing images
+        let existingImgs = document.querySelectorAll('.imageDeleteCheckbox').length;
+        // find total number of potential deletions
+        let imgDeletions = document.querySelectorAll('.imageDeleteCheckbox:checked').length;
+        // figure out if the form can be submitted or not
+        let newTotal = existingImgs - imgDeletions + imageUploads;
+        if(newTotal > 4){
+            event.preventDefault(); // stops the submit button from submitting
+            let removalAmt = newTotal - 4;
+            alert(`You need to remove ${removalAmt} more image${removalAmt === 1 ? '' : 's'}!`);
+        }
+    });
+</script>

@@ -1,4 +1,8 @@
+require('dotenv').config();
+
 const Post = require('../models/post');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const geocodingClient = mbxGeocoding({ accessToken: process.env.MAPBOX_TOKEN });
 const cloudinary = require('cloudinary');
 cloudinary.config({
     cloud_name: 'd3v0ps',
@@ -33,8 +37,21 @@ module.exports = {
             })
         }
 
+
+        let response = await geocodingClient
+            .forwardGeocode({
+                query: req.body.post.location, // location to pass
+                limit: 1         // only one result
+            })
+            .send();
+
+        console.log('RESPONSE: ', response.body.features[0].geometry.coordinates);
+        req.body.post.coordinates = response.body.features[0].geometry.coordinates;
+        console.log('2nd Response: ', req.body.post.coordinates)
         //use req.body to create a new Post
         let post = await Post.create(req.body.post);
+        console.log(post);
+        console.log(post.coordinates);
         res.redirect(`/posts/${post.id}`);
     },
 
@@ -85,11 +102,26 @@ module.exports = {
                 })
             }
         }
+
+        // check if location was updated
+        if (req.body.post.location !== post.location){
+            let response = await geocodingClient
+                .forwardGeocode({
+                    query: req.body.post.location, // location to pass
+                    limit: 1         // only one result
+                })
+                .send();
+        
+            post.coordinates = response.body.features[0].geometry.coordinates;
+            post.location = req.body.post.location;
+            console.log(post.coordinates);
+        }
+
         //update the post witht the new any new properties
         post.title = req.body.post.title;
         post.description = req.body.post.description;
         post.price = req.body.post.price;
-        post.location = req.body.post.location;
+        
         // save the update post into the db
         post.save();
         //redirect to show page

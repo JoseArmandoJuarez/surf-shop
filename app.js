@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 
 // Connect to the database
-mongoose.connect('mongodb://192.168.153.202:27017/surf-shop', {useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://192.168.67.22:27017/surf-shop', {useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));

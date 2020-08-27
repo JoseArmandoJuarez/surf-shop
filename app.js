@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const createError = require('http-errors');
 const express = require('express');
+const engine = require('ejs-mate');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -11,7 +12,7 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 
 // Connect to the database
-mongoose.connect('mongodb://192.168.67.22:27017/surf-shop', {useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://172.17.105.106:27017/surf-shop', {useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -30,6 +31,8 @@ const { connect } = require('http2');
 
 const app = express();
 
+// use ejs-locals for all ejs templates:
+app.engine('ejs', engine);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -57,6 +60,24 @@ passport.use(User.createStrategy());
 // serializeUser() & deserializeUser() comes form local-passport-moongose
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+
+
+// Set local variables middleware
+app.use(function(req, res, next){
+  // set success flash message
+  res.locals.success = req.session.success || '';
+  delete req.session.success;
+  // set error flash message
+  res.locals.error = req.session.error || '';
+  delete req.session.error;
+
+  // continue on to the next function in middleware chain
+  next();
+})
+
+
+
 
 // Mount routes
 app.use('/', indexRouter);

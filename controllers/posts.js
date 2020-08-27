@@ -52,6 +52,9 @@ module.exports = {
         let post = await Post.create(req.body.post);
         console.log(post);
         console.log(post.coordinates);
+
+        req.session.success = 'Post Created Successfully';
+
         res.redirect(`/posts/${post.id}`);
     },
 

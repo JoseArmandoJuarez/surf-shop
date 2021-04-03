@@ -23,3 +23,49 @@
         <input type="submit" value="Delete">
     </form>
 </div>
+
+<h3>Create a Review</h3>
+<form action="/posts/<%= post.id %>/reviews" method="POST">
+    <div class="form-group">
+        <label>Review</label>
+        <textarea name="review[body]" class="form-control" required></textarea>
+    </div>
+    <div class="form-group">
+        <label>Rating</label>
+        <input type="number" name="review[rating]" min="1" max="5" step="1" required>
+    </div>
+    <button type="submit" class="btn btn-primary">post</button>
+</form>
+
+<!-- display all reviews -->
+<h2>Reviews</h2>
+<% post.reviews.forEach(function(review) { %>
+    <div>
+        <p>Author: <%= review.author.username %></p>
+        <p><%= review.body %></p>
+        <p>Rating: <%= review.rating %></p>
+    </div>
+
+    <% if(review.author.equals(currentUser._id)){ %>
+        <div>
+            <button class="toggle-edit-form">Edit</button>
+            
+            <form action="/posts/<%= post.id %>/reviews/<%= review.id %>?_method=PUT" method="POST" class="edit-review-form">
+                <div class="form-group">
+                    <label>Review</label>
+                    <textarea name="review[body]" class="form-control" required><%= review.body %></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Rating</label>
+                    <input type="number" name="review[rating]" min="1" max="5" step="1" value="<%= review.rating %>" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+            <form action="/posts/<%= post.id %>/reviews/<%= review.id %>?_method=DELETE" method="POST">
+                <input type="submit" value="Delete">
+            </form>
+        </div>
+    <% } %>
+    <hr>
+<% }) %>
+

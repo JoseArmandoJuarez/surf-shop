@@ -1,5 +1,8 @@
 require('dotenv').config();
 
+//installation: https://github.com/mapbox/mapbox-sdk-js
+//Docs: https://docs.mapbox.com/api/#sdk-and-library-support
+
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const geocodingClient = mbxGeocoding({ accessToken: process.env.MAPBOX_TOKEN });
 

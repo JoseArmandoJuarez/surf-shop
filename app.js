@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 
 // Connect to the database
-mongoose.connect('mongodb://172.17.105.106:27017/surf-shop', {useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://172.17.228.250:27017/surf-shop', {useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -65,6 +65,13 @@ passport.deserializeUser(User.deserializeUser());
 
 // Set local variables middleware
 app.use(function(req, res, next){
+
+  req.user = {
+    '_id': '5f4957f3ed65b025e84bb66c',
+    'username': 'jose'
+  };
+  res.locals.currentUser = req.user;
+
   // set success flash message
   res.locals.success = req.session.success || '';
   delete req.session.success;
